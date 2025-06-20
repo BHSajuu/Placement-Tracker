@@ -80,7 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
 
   // Define color palettes for achievements
- const achievementPalettes = [
+  const achievementPalettes = [
     { bg: 'from-green-500 to-teal-500', text: 'text-gray-800' },
     { bg: 'from-blue-500 to-purple-500', text: 'text-white' },
     { bg: 'from-yellow-500 to-orange-700', text: 'text-gray-900' },
@@ -95,7 +95,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     { bg: 'from-yellow-400 to-yellow-600', text: 'text-gray-900' }
   ];
 
- 
+
   // Randomly pick a palette for each achievement
   const getAchievementStyle = () => {
     const idx = Math.floor(Math.random() * achievementPalettes.length);
@@ -108,7 +108,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-0 items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">
-            MAANG Placement Prep
+            MAANG placement preparation tracker
           </h1>
           <p className="text-gray-400 mt-1">
             {today.toLocaleDateString('en-US', {
@@ -120,22 +120,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={handleGoalSetup}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <Settings className="w-4 h-4" />
-            {userGoals ? 'Update Goals' : 'Set Goals'}
-          </button>
-          <button
-            onClick={handleResetJourney}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            New Journey
-          </button>
-        </div>
+
+        {userGoals &&
+          <div className="flex gap-3">
+            <button
+              onClick={handleGoalSetup}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+              Update Goals
+            </button>
+            <button
+              onClick={handleResetJourney}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              New Journey
+            </button>
+          </div>
+        }
       </div>
 
       {/* Goal Setup Prompt */}
@@ -160,31 +163,31 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Countdown Timer */}
       {userGoals && (
-         <div className="bg-gradient-to-r  from-slate-800 to-[#7886C7] rounded-xl p-6 text-white shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Day {daysPassed} of 60</h2>
-            <p className="text-yellow-600 text-lg">
-              {daysRemaining > 0 ? `${daysRemaining} days remaining` : 'Preparation Complete!'}
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="bg-black/65 rounded-lg p-3">
-              <Calendar className="w-8 h-8 mb-2" />
-              <div className="text-sm font-medium">
-                {Math.round((daysPassed / 60) * 100)}%
+        <div className="bg-gradient-to-r  from-slate-800 to-[#7886C7] rounded-xl p-6 text-white shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Day {daysPassed} of 60</h2>
+              <p className="text-yellow-600 text-lg">
+                {daysRemaining > 0 ? `${daysRemaining} days remaining` : 'Preparation Complete!'}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="bg-black/65 rounded-lg p-3">
+                <Calendar className="w-8 h-8 mb-2" />
+                <div className="text-sm font-medium">
+                  {Math.round((daysPassed / 60) * 100)}%
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-4 bg-white/20 rounded-full h-2">
-          <div
-            className="bg-[#26dc72] rounded-full h-full transition-all duration-500"
-            style={{ width: `${Math.min((daysPassed / 60) * 100, 100)}%` }}
-          />
+          <div className="mt-4 bg-white/20 rounded-full h-2">
+            <div
+              className="bg-[#26dc72] rounded-full h-full transition-all duration-500"
+              style={{ width: `${Math.min((daysPassed / 60) * 100, 100)}%` }}
+            />
+          </div>
         </div>
-      </div>
       )}
 
       {/* Motivational Quote */}
