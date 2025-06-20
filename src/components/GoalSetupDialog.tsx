@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Target, Plus, Trash2, Database, Code, Globe, Network, MessageSquare, Cpu, Mic } from 'lucide-react';
 import { UserGoals, DSATopic } from '../types';
+import { useUserId } from "../hooks/useUserId";
 
 interface GoalSetupDialogProps {
   isOpen: boolean;
@@ -147,386 +148,396 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
     setGoals({ ...goals, dsaTopics: updatedTopics });
   };
 
+  const userId = useUserId();
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto no-scrollbar shadow-lg">
-        <div className="sticky top-0 bg-gray-800 p-6 border-b border-gray-700 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Target className="w-6 h-6 text-blue-500" />
-            <h2 className="text-2xl font-bold text-white">
-              {existingGoals ? 'Update Your Goals' : 'Set Your 60-Day Goals'}
-            </h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+      {!userId ? (
+        <div className="bg-gray-800 rounded-xl p-6">
+          {/* todo for bolt.ai : we should take the name , email and password of the user and use this to create userId instead of creating userId using localstorage . And also make the funtionality that if any user want to use the same in mobile also*/}
         </div>
-
-        <div className="p-6 space-y-8">
-          {/* DSA Foundation with Topics */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Code className="w-5 h-5 text-blue-500" />
-              DSA Foundation (Topic-Based Tracking)
-            </h3>
-
-            <div className="flex items-center gap-3 mb-4">
-              <label className="text-gray-300">Overall Target Questions:</label>
-              <input
-                type="number"
-                min="1"
-                max="1000"
-                value={goals.dsaQuestions}
-                onChange={(e) => setGoals({ ...goals, dsaQuestions: parseInt(e.target.value) || 0 })}
-                className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
-              />
-              <span className="text-gray-400">questions</span>
+      )
+        :
+        <div className="bg-gray-800 rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto no-scrollbar shadow-lg">
+          <div className="sticky top-0 bg-gray-800 p-6 border-b border-gray-700 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Target className="w-6 h-6 text-blue-500" />
+              <h2 className="text-2xl font-bold text-white">
+                {existingGoals ? 'Update Your Goals' : 'Set Your 60-Day Goals'}
+              </h2>
             </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
 
-            <div className="space-y-3">
-              <h4 className="text-md font-medium text-gray-300">DSA Topics & Targets</h4>
-              <div className="grid gap-3 max-h-60 overflow-y-auto achievement-scrollbar">
-                {goals.dsaTopics.map((topic, index) => (
-                  <div key={index} className="bg-gray-700 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <input
-                        type="text"
-                        value={topic.name}
-                        onChange={(e) => updateDSATopic(index, 'name', e.target.value)}
-                        className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
-                        placeholder="Topic name"
-                      />
-                      <input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={topic.targetQuestions}
-                        onChange={(e) => updateDSATopic(index, 'targetQuestions', parseInt(e.target.value) || 1)}
-                        className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
-                      />
-                      <span className="text-xs text-gray-400">Q</span>
-                      <button
-                        onClick={() => removeDSATopic(index)}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+          <div className="p-6 space-y-8">
+            {/* DSA Foundation with Topics */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Code className="w-5 h-5 text-blue-500" />
+                DSA Foundation (Topic-Based Tracking)
+              </h3>
+
+              <div className="flex items-center gap-3 mb-4">
+                <label className="text-gray-300">Overall Target Questions:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={goals.dsaQuestions}
+                  onChange={(e) => setGoals({ ...goals, dsaQuestions: parseInt(e.target.value) || 0 })}
+                  className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
+                />
+                <span className="text-gray-400">questions</span>
               </div>
 
-              <div className="bg-gray-700 p-3 rounded-lg border-2 border-dashed border-gray-600">
-                <div className="flex gap-2 mb-2">
+              <div className="space-y-3">
+                <h4 className="text-md font-medium text-gray-300">DSA Topics & Targets</h4>
+                <div className="grid gap-3 max-h-60 overflow-y-auto achievement-scrollbar">
+                  {goals.dsaTopics.map((topic, index) => (
+                    <div key={index} className="bg-gray-700 p-3 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={topic.name}
+                          onChange={(e) => updateDSATopic(index, 'name', e.target.value)}
+                          className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+                          placeholder="Topic name"
+                        />
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={topic.targetQuestions}
+                          onChange={(e) => updateDSATopic(index, 'targetQuestions', parseInt(e.target.value) || 1)}
+                          className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+                        />
+                        <span className="text-xs text-gray-400">Q</span>
+                        <button
+                          onClick={() => removeDSATopic(index)}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-gray-700 p-3 rounded-lg border-2 border-dashed border-gray-600">
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={newDSATopic.name}
+                      onChange={(e) => setNewDSATopic({ ...newDSATopic, name: e.target.value })}
+                      placeholder="New topic name..."
+                      className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={newDSATopic.targetQuestions}
+                      onChange={(e) => setNewDSATopic({ ...newDSATopic, targetQuestions: parseInt(e.target.value) || 1 })}
+                      className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={addDSATopic}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
                   <input
                     type="text"
-                    value={newDSATopic.name}
-                    onChange={(e) => setNewDSATopic({ ...newDSATopic, name: e.target.value })}
-                    placeholder="New topic name..."
-                    className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+                    value={newDSATopic.description}
+                    onChange={(e) => setNewDSATopic({ ...newDSATopic, description: e.target.value })}
+                    placeholder="Topic description (optional)..."
+                    className="w-full px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500 text-sm"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Web Development Projects */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Globe className="w-5 h-5 text-green-500" />
+                Web Development Projects
+              </h3>
+              <div className="space-y-2">
+                {goals.webDevProjects.map((project, index) => (
+                  <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
+                    <span className="text-white flex-1">{project}</span>
+                    <button
+                      onClick={() => removeProject(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                <div className="flex gap-2">
                   <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={newDSATopic.targetQuestions}
-                    onChange={(e) => setNewDSATopic({ ...newDSATopic, targetQuestions: parseInt(e.target.value) || 1 })}
-                    className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+                    type="text"
+                    value={newProject}
+                    onChange={(e) => setNewProject(e.target.value)}
+                    placeholder="Add new project..."
+                    className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && addProject()}
                   />
                   <button
-                    onClick={addDSATopic}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                    onClick={addProject}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
-                <input
-                  type="text"
-                  value={newDSATopic.description}
-                  onChange={(e) => setNewDSATopic({ ...newDSATopic, description: e.target.value })}
-                  placeholder="Topic description (optional)..."
-                  className="w-full px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-blue-500 text-sm"
-                />
               </div>
             </div>
-          </div>
 
-          {/* Web Development Projects */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Globe className="w-5 h-5 text-green-500" />
-              Web Development Projects
-            </h3>
-            <div className="space-y-2">
-              {goals.webDevProjects.map((project, index) => (
-                <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
-                  <span className="text-white flex-1">{project}</span>
-                  <button
-                    onClick={() => removeProject(index)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newProject}
-                  onChange={(e) => setNewProject(e.target.value)}
-                  placeholder="Add new project..."
-                  className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
-                  onKeyPress={(e) => e.key === 'Enter' && addProject()}
-                />
-                <button
-                  onClick={addProject}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* System Design Cases */}
-          <div className="space-y-3">
-
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Network className="w-5 h-5 text-yellow-500" />
-              System Design Case Studies
-            </h3>
-            <div className="space-y-2">
-              {goals.systemDesignCases.map((caseStudy, index) => (
-                <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
-                  <span className="text-white flex-1">{caseStudy}</span>
-                  <button
-                    onClick={() => removeCase(index)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newCase}
-                  onChange={(e) => setNewCase(e.target.value)}
-                  placeholder="Add new case study..."
-                  className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
-                  onKeyPress={(e) => e.key === 'Enter' && addCase()}
-                />
-                <button
-                  onClick={addCase}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Mock Interviews */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-pink-500" />
-              Mock Interviews
-            </h3>
-            <div className="flex items-center gap-3">
-              <label className="text-gray-300">Target Sessions:</label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={goals.mockInterviews}
-                onChange={(e) => setGoals({ ...goals, mockInterviews: parseInt(e.target.value) || 0 })}
-                className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
-              />
-              <span className="text-gray-400">sessions</span>
-            </div>
-          </div>
-
-          {/* Data Science (Topic‑Based Tracking) */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Database className="w-5 h-5 text-purple-500" />
-              Data Science (Topic‑Based)
-            </h3>
-            <div className="flex items-center gap-3 mb-4">
-              <label className="text-gray-300">Overall Target Tutorials:</label>
-              <input
-                type="number"
-                min="1"
-                max="1000"
-                value={goals.dataScienceTutorials}
-                onChange={(e) => setGoals({ ...goals, dataScienceTutorials: parseInt(e.target.value) || 0 })}
-                className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
-              />
-              <span className="text-gray-400">tutorials</span>
-            </div>
+            {/* System Design Cases */}
             <div className="space-y-3">
-              <h4 className="text-md font-medium text-gray-300">DS Topics & Targets</h4>
-              <div className="grid gap-3 max-h-60 overflow-y-auto achievement-scrollbar">
-                {goals.dataScienceTopics?.map((topic, idx) => (
-                  <div key={idx} className="bg-gray-700 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <input
-                        type="text"
-                        value={topic.name}
-                        onChange={(e) => {
-                          const t = [...goals.dataScienceTopics];
-                          t[idx].name = e.target.value;
-                          setGoals({ ...goals, dataScienceTopics: t });
-                        }}
-                        className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
-                        placeholder="Topic name"
-                      />
-                      <input
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={topic.targetTutorials}
-                        onChange={(e) => {
-                          const t = [...goals.dataScienceTopics];
-                          t[idx].targetTutorials = parseInt(e.target.value) || 1;
-                          setGoals({ ...goals, dataScienceTopics: t });
-                        }}
-                        className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
-                      />
-                      <span className="text-xs text-gray-400">Tuts</span>
-                      <button
-                        onClick={() => {
-                          const t = goals.dataScienceTopics.filter((_, i) => i !== idx);
-                          setGoals({ ...goals, dataScienceTopics: t });
-                        }}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Network className="w-5 h-5 text-yellow-500" />
+                System Design Case Studies
+              </h3>
+              <div className="space-y-2">
+                {goals.systemDesignCases.map((caseStudy, index) => (
+                  <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
+                    <span className="text-white flex-1">{caseStudy}</span>
+                    <button
+                      onClick={() => removeCase(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 ))}
-              </div>
-
-
-              {/* Add new DS topic */}
-              <div className="bg-gray-700 p-3 rounded-lg border-2 border-dashed border-gray-600">
-                <div className="flex gap-2 mb-2">
+                <div className="flex gap-2">
                   <input
                     type="text"
-                    value={newDSTopic.name}
-                    onChange={(e) => setNewDSTopic({ ...newDSTopic, name: e.target.value })}
-                    placeholder="New topic name..."
-                    className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
-                  />
-                  <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={newDSTopic.targetTutorials}
-                    onChange={(e) => setNewDSTopic({ ...newDSTopic, targetTutorials: parseInt(e.target.value) || 1 })}
-                    className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
+                    value={newCase}
+                    onChange={(e) => setNewCase(e.target.value)}
+                    placeholder="Add new case study..."
+                    className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && addCase()}
                   />
                   <button
-                    onClick={() => {
-                      if (newDSTopic.name.trim()) {
-                        setGoals({
-                          ...goals,
-                          dataScienceTopics: [
-                            ...goals.dataScienceTopics,
-                            { ...newDSTopic, name: newDSTopic.name.trim() }
-                          ]
-                        });
-                        setNewDSTopic({ name: '', targetTutorials: 5 });
-                      }
-                    }}
-                    className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded"
+                    onClick={addCase}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
-
               </div>
             </div>
-          </div>
+
+            {/* Mock Interviews */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-pink-500" />
+                Mock Interviews
+              </h3>
+              <div className="flex items-center gap-3">
+                <label className="text-gray-300">Target Sessions:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={goals.mockInterviews}
+                  onChange={(e) => setGoals({ ...goals, mockInterviews: parseInt(e.target.value) || 0 })}
+                  className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
+                />
+                <span className="text-gray-400">sessions</span>
+              </div>
+            </div>
+
+            {/* Data Science (Topic‑Based Tracking) */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Database className="w-5 h-5 text-purple-500" />
+                Data Science (Topic‑Based)
+              </h3>
+              <div className="flex items-center gap-3 mb-4">
+                <label className="text-gray-300">Overall Target Tutorials:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={goals.dataScienceTutorials}
+                  onChange={(e) => setGoals({ ...goals, dataScienceTutorials: parseInt(e.target.value) || 0 })}
+                  className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
+                />
+                <span className="text-gray-400">tutorials</span>
+              </div>
+              <div className="space-y-3">
+                <h4 className="text-md font-medium text-gray-300">DS Topics & Targets</h4>
+                <div className="grid gap-3 max-h-60 overflow-y-auto achievement-scrollbar">
+                  {goals.dataScienceTopics?.map((topic, idx) => (
+                    <div key={idx} className="bg-gray-700 p-3 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={topic.name}
+                          onChange={(e) => {
+                            const t = [...goals.dataScienceTopics];
+                            t[idx].name = e.target.value;
+                            setGoals({ ...goals, dataScienceTopics: t });
+                          }}
+                          className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
+                          placeholder="Topic name"
+                        />
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={topic.targetTutorials}
+                          onChange={(e) => {
+                            const t = [...goals.dataScienceTopics];
+                            t[idx].targetTutorials = parseInt(e.target.value) || 1;
+                            setGoals({ ...goals, dataScienceTopics: t });
+                          }}
+                          className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
+                        />
+                        <span className="text-xs text-gray-400">Tuts</span>
+                        <button
+                          onClick={() => {
+                            const t = goals.dataScienceTopics.filter((_, i) => i !== idx);
+                            setGoals({ ...goals, dataScienceTopics: t });
+                          }}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
 
-          {/* CS Fundamentals */}
-          <div className="space-y-3">
+                {/* Add new DS topic */}
+                <div className="bg-gray-700 p-3 rounded-lg border-2 border-dashed border-gray-600">
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={newDSTopic.name}
+                      onChange={(e) => setNewDSTopic({ ...newDSTopic, name: e.target.value })}
+                      placeholder="New topic name..."
+                      className="flex-1 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
+                    />
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={newDSTopic.targetTutorials}
+                      onChange={(e) => setNewDSTopic({ ...newDSTopic, targetTutorials: parseInt(e.target.value) || 1 })}
+                      className="w-16 px-2 py-1 bg-gray-600 text-white rounded border border-gray-500 focus:ring-1 focus:ring-purple-500"
+                    />
+                    <button
+                      onClick={() => {
+                        if (newDSTopic.name.trim()) {
+                          setGoals({
+                            ...goals,
+                            dataScienceTopics: [
+                              ...goals.dataScienceTopics,
+                              { ...newDSTopic, name: newDSTopic.name.trim() }
+                            ]
+                          });
+                          setNewDSTopic({ name: '', targetTutorials: 5 });
+                        }
+                      }}
+                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
 
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-red-500" />
-              CS Fundamentals Chapters</h3>
-            <div className="space-y-2">
-              {goals.csFundamentalsChapters.map((chapter, index) => (
-                <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
-                  <span className="text-white flex-1">{chapter}</span>
+                </div>
+              </div>
+            </div>
+
+
+            {/* CS Fundamentals */}
+            <div className="space-y-3">
+
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-red-500" />
+                CS Fundamentals Chapters</h3>
+              <div className="space-y-2">
+                {goals.csFundamentalsChapters.map((chapter, index) => (
+                  <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
+                    <span className="text-white flex-1">{chapter}</span>
+                    <button
+                      onClick={() => removeChapter(index)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newChapter}
+                    onChange={(e) => setNewChapter(e.target.value)}
+                    placeholder="Add new chapter..."
+                    className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && addChapter()}
+                  />
                   <button
-                    onClick={() => removeChapter(index)}
-                    className="text-red-400 hover:text-red-300"
+                    onClick={addChapter}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
-              ))}
-              <div className="flex gap-2">
+              </div>
+            </div>
+
+            {/* English Speaking */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Mic className="w-5 h-5 text-indigo-500" />
+                English Speaking Practice
+              </h3>
+              <div className="flex items-center gap-3">
+                <label className="text-gray-300">Target Sessions:</label>
                 <input
-                  type="text"
-                  value={newChapter}
-                  onChange={(e) => setNewChapter(e.target.value)}
-                  placeholder="Add new chapter..."
-                  className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500"
-                  onKeyPress={(e) => e.key === 'Enter' && addChapter()}
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={goals.englishSpeakingSessions}
+                  onChange={(e) => setGoals({ ...goals, englishSpeakingSessions: parseInt(e.target.value) || 0 })}
+                  className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
                 />
-                <button
-                  onClick={addChapter}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                <span className="text-gray-400">sessions</span>
               </div>
             </div>
           </div>
 
-          {/* English Speaking */}
-          <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Mic className="w-5 h-5 text-indigo-500" />
-              English Speaking Practice
-            </h3>
-            <div className="flex items-center gap-3">
-              <label className="text-gray-300">Target Sessions:</label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={goals.englishSpeakingSessions}
-                onChange={(e) => setGoals({ ...goals, englishSpeakingSessions: parseInt(e.target.value) || 0 })}
-                className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500 w-24"
-              />
-              <span className="text-gray-400">sessions</span>
-            </div>
+          <div className="sticky bottom-0 bg-gray-800 p-6 border-t border-gray-700 flex gap-3 justify-end">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+            >
+              Save Goals
+            </button>
           </div>
         </div>
+      }
 
-        <div className="sticky bottom-0 bg-gray-800 p-6 border-t border-gray-700 flex gap-3 justify-end">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-          >
-            Save Goals
-          </button>
-        </div>
-      </div>
     </div>
   );
-};
+}; 
