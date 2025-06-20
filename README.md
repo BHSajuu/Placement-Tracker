@@ -37,7 +37,7 @@ This is a smart and personalized preparation tracker for MAANG aspirants, built 
 
 - ⚛️ **React** – Used for building component logic 
 - 🎨 **Tailwind CSS** – For consistent UI styling
-- 🧠 **LocalStorage** – To persist user goal data
+- 🧠 **Convex** – To persist user goal data
 
 ---
 
