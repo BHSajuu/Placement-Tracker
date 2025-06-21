@@ -5,6 +5,7 @@ import { ProgressTracker } from './components/ProgressTracker';
 import { StrikeChart } from './components/StrikeChart';
 import { RewardPopup } from './components/RewardPopup';
 import { useConvexData } from './hooks/useConvexData';
+import { useAuth } from './hooks/useAuth';
 import { Task, UserProgress, Achievement, UserGoals } from './types';
 import { BarChart3, CheckSquare, Target, Activity } from 'lucide-react';
 
@@ -12,7 +13,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
   
-  
+  const { isAuthenticated } = useAuth();
   const {
     userId,
     user,
@@ -21,7 +22,6 @@ function App() {
     tasks,
     milestones,
     achievements,
-    createUser,
     updateStartDate,
     createOrUpdateGoals,
     createOrUpdateProgress,
@@ -33,27 +33,17 @@ function App() {
     createAchievement,
   } = useConvexData();
 
-  // Initialize user and default data
+  // Initialize default milestones when user is authenticated and has goals
   useEffect(() => {
-    if (userId && !user) {
-      createUser({
-        userId,
-        startDate: new Date().toISOString(),
-      });
+    if (isAuthenticated && userId && userGoals && milestones.length === 0) {
+      createDefaultMilestones();
     }
-  }, [userId, user, createUser]);
-
-  useEffect(() => {
-    if (userId && user && milestones.length === 0) {
-      createDefaultMilestones({ userId });
-    }
-  }, [userId, user, milestones, createDefaultMilestones]);
+  }, [isAuthenticated, userId, userGoals, milestones, createDefaultMilestones]);
 
   // Initialize default user progress if not exists
   useEffect(() => {
-    if (userId && user && !userProgress) {
+    if (isAuthenticated && userId && userGoals && !userProgress) {
       createOrUpdateProgress({
-        userId,
         totalXP: 0,
         level: 1,
         currentStreak: 0,
@@ -65,13 +55,12 @@ function App() {
         dsTopicProgress: {},
       });
     }
-  }, [userId, user, userProgress, createOrUpdateProgress]);
+  }, [isAuthenticated, userId, userGoals, userProgress, createOrUpdateProgress]);
 
   const addTask = async (taskData: Omit<Task, 'id' | 'createdAt'>) => {
-    if (!userId) return;
+    if (!isAuthenticated || !userId) return;
     
     await createTask({
-      userId,
       title: taskData.title,
       category: taskData.category,
       timeSlot: taskData.timeSlot,
@@ -139,10 +128,7 @@ function App() {
           icon: 'trophy',
         };
         
-        await createAchievement({
-          userId,
-          ...achievement,
-        });
+        await createAchievement(achievement);
         
         newProgress.totalXP += 150;
         setCurrentAchievement({
@@ -189,10 +175,7 @@ function App() {
           icon: 'trophy',
         };
         
-        await createAchievement({
-          userId,
-          ...achievement,
-        });
+        await createAchievement(achievement);
         
         newProgress.totalXP += 150;
         setCurrentAchievement({
@@ -235,7 +218,7 @@ function App() {
         icon: 'trophy',
       };
       
-      await createAchievement({ userId, ...achievement });
+      await createAchievement(achievement);
       newProgress.totalXP += 100;
       setCurrentAchievement({
         id: `temp_${Date.now()}`,
@@ -252,7 +235,7 @@ function App() {
         icon: 'trophy',
       };
       
-      await createAchievement({ userId, ...achievement });
+      await createAchievement(achievement);
       newProgress.totalXP += 100;
       setCurrentAchievement({
         id: `temp_${Date.now()}`,
@@ -269,7 +252,7 @@ function App() {
         icon: 'trophy',
       };
       
-      await createAchievement({ userId, ...achievement });
+      await createAchievement(achievement);
       newProgress.totalXP += 200;
       setCurrentAchievement({
         id: `temp_${Date.now()}`,
@@ -280,7 +263,7 @@ function App() {
   };
 
   const handleToggleTask = async (taskId: string) => {
-    if (!userId || !userProgress) return;
+    if (!isAuthenticated || !userId || !userProgress) return;
 
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
@@ -330,7 +313,7 @@ function App() {
               icon: 'trophy',
             };
             
-            await createAchievement({ userId, ...achievement });
+            await createAchievement(achievement);
             setCurrentAchievement({
               id: `temp_${Date.now()}`,
               ...achievement,
@@ -363,7 +346,7 @@ function App() {
             icon: 'flame',
           };
           
-          await createAchievement({ userId, ...achievement });
+          await createAchievement(achievement);
           setCurrentAchievement({
             id: `temp_${Date.now()}`,
             ...achievement,
@@ -412,7 +395,6 @@ function App() {
 
     // Save updated progress
     await createOrUpdateProgress({
-      userId,
       totalXP: newProgress.totalXP,
       level: newProgress.level,
       currentStreak: newProgress.currentStreak,
@@ -430,34 +412,19 @@ function App() {
   };
 
   const updateGoals = async (goals: UserGoals) => {
-    if (!userId) return;
+    if (!isAuthenticated || !userId) return;
     
-    await createOrUpdateGoals({
-      userId,
-      dsaQuestions: goals.dsaQuestions,
-      dsaTopics: goals.dsaTopics,
-      webDevProjects: goals.webDevProjects,
-      systemDesignCases: goals.systemDesignCases,
-      mockInterviews: goals.mockInterviews,
-      dataScienceTutorials: goals.dataScienceTutorials,
-      dataScienceTopics: goals.dataScienceTopics,
-      csFundamentalsChapters: goals.csFundamentalsChapters,
-      englishSpeakingSessions: goals.englishSpeakingSessions,
-    });
+    await createOrUpdateGoals(goals);
   };
 
   const resetJourney = async () => {
-    if (!userId) return;
+    if (!isAuthenticated || !userId) return;
     
     // Reset start date
-    await updateStartDate({
-      userId,
-      startDate: new Date().toISOString(),
-    });
+    await updateStartDate(new Date().toISOString());
 
     // Reset progress
     await createOrUpdateProgress({
-      userId,
       totalXP: 0,
       level: 1,
       currentStreak: 0,
@@ -489,15 +456,6 @@ function App() {
     { id: 'progress', label: 'Progress', icon: <Target className="w-4 h-4" /> },
     { id: 'activity', label: 'Activity', icon: <Activity className="w-4 h-4" /> }
   ];
-
-  // Show loading state while data is loading
-  if (!userId || !user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
 
   const defaultUserProgress: UserProgress = {
     totalXP: 0,
@@ -546,7 +504,7 @@ function App() {
             />
           )}
 
-          {activeTab === 'tasks' && (
+          {activeTab === 'tasks' && isAuthenticated && (
             <TaskManager
               tasks={tasks}
               userGoals={userGoals}
@@ -556,7 +514,7 @@ function App() {
             />
           )}
 
-          {activeTab === 'progress' && (
+          {activeTab === 'progress' && isAuthenticated && (
             <ProgressTracker
               userProgress={userProgress || defaultUserProgress}
               milestones={milestones}
@@ -565,8 +523,22 @@ function App() {
             />
           )}
 
-          {activeTab === 'activity' && (
+          {activeTab === 'activity' && isAuthenticated && (
             <StrikeChart userProgress={userProgress || defaultUserProgress} />
+          )}
+
+          {/* Show authentication required message for protected tabs */}
+          {!isAuthenticated && ['tasks', 'progress', 'activity'].includes(activeTab) && (
+            <div className="bg-gray-800 rounded-xl p-8 text-center">
+              <h2 className="text-xl font-bold text-white mb-4">Authentication Required</h2>
+              <p className="text-gray-400 mb-6">Please sign in to access this feature.</p>
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Go to Dashboard
+              </button>
+            </div>
           )}
         </div>
       </div>

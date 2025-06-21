@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const createOrUpdateGoals = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     dsaQuestions: v.number(),
     dsaTopics: v.array(v.object({
       name: v.string(),
@@ -50,7 +50,7 @@ export const createOrUpdateGoals = mutation({
 });
 
 export const getUserGoals = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("userGoals")

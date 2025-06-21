@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const createAchievement = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     title: v.string(),
     description: v.string(),
     type: v.union(
@@ -28,7 +28,7 @@ export const createAchievement = mutation({
 });
 
 export const getUserAchievements = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("achievements")

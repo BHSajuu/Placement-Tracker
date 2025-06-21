@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const createOrUpdateProgress = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     totalXP: v.number(),
     level: v.number(),
     currentStreak: v.number(),
@@ -44,7 +44,7 @@ export const createOrUpdateProgress = mutation({
 });
 
 export const getUserProgress = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("userProgress")

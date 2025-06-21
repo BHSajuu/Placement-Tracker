@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Calendar, Target, Flame, Trophy, RefreshCw, Hash, Settings } from 'lucide-react';
+import { Calendar, Target, Flame, Trophy, RefreshCw, Hash, Settings, LogOut } from 'lucide-react';
 import { UserProgress, UserGoals } from '../types';
 import { getRandomQuote } from '../utils/motivationalQuotes';
 import { GoalSetupDialog } from './GoalSetupDialog';
+import { AuthDialog } from './AuthDialog';
+import { useAuth } from '../hooks/useAuth';
 
 interface DashboardProps {
   userProgress: UserProgress;
@@ -20,6 +22,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onUpdateGoals
 }) => {
   const [showGoalDialog, setShowGoalDialog] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const { isAuthenticated, user, register, login, logout } = useAuth();
   const today = new Date();
 
   // Normalize dates to local midnight to count calendar days
@@ -45,6 +49,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const handleGoalSetup = () => {
     setShowGoalDialog(true);
+  };
+
+  const handleAuthSuccess = () => {
+    // After successful auth, show goal setup if no goals exist
+    if (!userGoals) {
+      setShowGoalDialog(true);
+    }
   };
 
   const stats = [
@@ -78,7 +89,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
   ];
 
-
   // Define color palettes for achievements
   const achievementPalettes = [
     { bg: 'from-green-500 to-teal-500', text: 'text-gray-800' },
@@ -95,7 +105,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
     { bg: 'from-yellow-400 to-yellow-600', text: 'text-gray-900' }
   ];
 
-
   // Randomly pick a palette for each achievement
   const getAchievementStyle = () => {
     const idx = Math.floor(Math.random() * achievementPalettes.length);
@@ -111,6 +120,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
             MAANG placement preparation tracker
           </h1>
           <p className="text-gray-400 mt-1">
+            {isAuthenticated && user ? `Welcome back, ${user.name}!` : 'Welcome to your prep journey!'}
+          </p>
+          <p className="text-gray-400 text-sm">
             {today.toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
@@ -120,39 +132,58 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </p>
         </div>
 
-
-        {userGoals &&
-          <div className="flex gap-3">
+        <div className="flex gap-3">
+          {isAuthenticated ? (
+            <>
+              {userGoals && (
+                <>
+                  <button
+                    onClick={handleGoalSetup}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Update Goals
+                  </button>
+                  <button
+                    onClick={handleResetJourney}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    New Journey
+                  </button>
+                </>
+              )}
+              <button
+                onClick={logout}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </>
+          ) : (
             <button
-              onClick={handleGoalSetup}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              onClick={() => setShowAuthDialog(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
             >
-              <Settings className="w-4 h-4" />
-              Update Goals
+              Get Started
             </button>
-            <button
-              onClick={handleResetJourney}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              New Journey
-            </button>
-          </div>
-        }
+          )}
+        </div>
       </div>
 
-      {/* Goal Setup Prompt */}
-      {!userGoals && (
+      {/* Authentication Required Prompt */}
+      {!isAuthenticated && (
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white shadow-lg border-2 border-blue-400">
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 items-center justify-between">
             <div>
               <h2 className="text-xl font-bold mb-2">Welcome to Your MAANG Prep Journey!</h2>
               <p className="text-blue-100">
-                Set your personalized 60-day goals to get started with smart progress tracking.
+                Create your account to start tracking your progress and set personalized 60-day goals.
               </p>
             </div>
             <button
-              onClick={handleGoalSetup}
+              onClick={() => setShowAuthDialog(true)}
               className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
             >
               Get Started
@@ -161,9 +192,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       )}
 
+      {/* Goal Setup Prompt */}
+      {isAuthenticated && !userGoals && (
+        <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-6 text-white shadow-lg border-2 border-green-400">
+          <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold mb-2">Set Your 60-Day Goals!</h2>
+              <p className="text-green-100">
+                Define your personalized goals to get started with smart progress tracking.
+              </p>
+            </div>
+            <button
+              onClick={handleGoalSetup}
+              className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+            >
+              Set Goals
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Countdown Timer */}
-      {userGoals && (
-        <div className="bg-gradient-to-r  from-slate-800 to-[#7886C7] rounded-xl p-6 text-white shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
+      {isAuthenticated && userGoals && (
+        <div className="bg-gradient-to-r from-slate-800 to-[#7886C7] rounded-xl p-6 text-white shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-2">Day {daysPassed} of 60</h2>
@@ -191,48 +242,51 @@ export const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {/* Motivational Quote */}
-      <div className="bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-green-500 hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
-        <h3 className="text-lg font-semibold text-white mb-2">Daily Motivation</h3>
-        <p className="text-gray-400 italic text-lg leading-relaxed">
-          "{getRandomQuote()}"
-        </p>
-      </div>
+      {isAuthenticated && (
+        <div className="bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-green-500 hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
+          <h3 className="text-lg font-semibold text-white mb-2">Daily Motivation</h3>
+          <p className="text-gray-400 italic text-lg leading-relaxed">
+            "{getRandomQuote()}"
+          </p>
+        </div>
+      )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <div key={index} className="bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`bg-gradient-to-r ${stat.color} p-2 rounded-lg text-white`}>
-                {stat.icon}
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-white">
-                  {stat.value}
+      {isAuthenticated && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((stat, index) => (
+            <div key={index} className="bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <div className={`bg-gradient-to-r ${stat.color} p-2 rounded-lg text-white`}>
+                  {stat.icon}
                 </div>
-                {stat.suffix && (
-                  <div className="text-xs text-gray-400">
-                    {stat.suffix}
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-white">
+                    {stat.value}
                   </div>
-                )}
+                  {stat.suffix && (
+                    <div className="text-xs text-gray-400">
+                      {stat.suffix}
+                    </div>
+                  )}
+                </div>
               </div>
+              <h3 className="text-sm font-medium text-gray-400">
+                {stat.title}
+              </h3>
             </div>
-            <h3 className="text-sm font-medium text-gray-400">
-              {stat.title}
-            </h3>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-
-      {/* Achievement Showcase with custom scrollbar */}
-      {userProgress.achievements.length > 0 && (
+      {/* Achievement Showcase */}
+      {isAuthenticated && userProgress.achievements.length > 0 && (
         <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-500" /> Recent Achievements
           </h3>
           <div className="overflow-x-auto achievement-scrollbar">
-            <div className=" flex space-x-4 p-2 hover:cursor-no-drop ">
+            <div className="flex space-x-4 p-2 hover:cursor-no-drop">
               {userProgress.achievements.map((achievement) => {
                 const style = getAchievementStyle();
                 return (
@@ -240,10 +294,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     key={achievement.id}
                     className={`flex-shrink-0 bg-gradient-to-r ${style.bg} ${style.text} p-3 rounded-lg min-w-[120px] m-1 hover:scale-105 transition-transform duration-300 shadow-lg`}
                   >
-                    <>
-                      <div className="font-semibold text-sm text-center">{achievement.title}</div>
-                      <div className="text-xs mt-1 text-center">{achievement.description}</div>
-                    </>
+                    <div className="font-semibold text-sm text-center">{achievement.title}</div>
+                    <div className="text-xs mt-1 text-center">{achievement.description}</div>
                   </div>
                 );
               })}
@@ -251,6 +303,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Auth Dialog */}
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
+        onSuccess={handleAuthSuccess}
+        onRegister={register}
+        onLogin={login}
+      />
 
       {/* Goal Setup Dialog */}
       <GoalSetupDialog

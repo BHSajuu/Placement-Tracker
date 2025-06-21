@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const createTask = mutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     title: v.string(),
     category: v.union(
       v.literal("DSA"),
@@ -51,7 +51,7 @@ export const createTask = mutation({
 });
 
 export const getUserTasks = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("tasks")

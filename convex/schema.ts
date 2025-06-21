@@ -3,13 +3,15 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
-    userId: v.string(),
+    name: v.string(),
+    email: v.string(),
+    password: v.string(),
     startDate: v.string(),
     createdAt: v.number(),
-  }).index("by_userId", ["userId"]),
+  }).index("by_email", ["email"]),
 
   userGoals: defineTable({
-    userId: v.string(),
+    userId: v.id("users"),
     dsaQuestions: v.number(),
     dsaTopics: v.array(v.object({
       name: v.string(),
@@ -29,7 +31,7 @@ export default defineSchema({
   }).index("by_userId", ["userId"]),
 
   userProgress: defineTable({
-    userId: v.string(),
+    userId: v.id("users"),
     totalXP: v.number(),
     level: v.number(),
     currentStreak: v.number(),
@@ -43,7 +45,7 @@ export default defineSchema({
   }).index("by_userId", ["userId"]),
 
   tasks: defineTable({
-    userId: v.string(),
+    userId: v.id("users"),
     title: v.string(),
     category: v.union(
       v.literal("DSA"),
@@ -74,7 +76,7 @@ export default defineSchema({
   }).index("by_userId", ["userId"]),
 
   milestones: defineTable({
-    userId: v.string(),
+    userId: v.id("users"),
     title: v.string(),
     description: v.string(),
     category: v.union(
@@ -94,7 +96,7 @@ export default defineSchema({
   }).index("by_userId", ["userId"]),
 
   achievements: defineTable({
-    userId: v.string(),
+    userId: v.id("users"),
     title: v.string(),
     description: v.string(),
     type: v.union(

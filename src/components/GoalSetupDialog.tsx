@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Target, Plus, Trash2, Database, Code, Globe, Network, MessageSquare, Cpu, Mic } from 'lucide-react';
 import { UserGoals, DSATopic } from '../types';
-import { useUserId } from "../hooks/useUserId";
+import { useAuth } from "../hooks/useAuth";
 
 interface GoalSetupDialogProps {
   isOpen: boolean;
@@ -66,6 +66,8 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
   const [newChapter, setNewChapter] = useState('');
   const [newDSATopic, setNewDSATopic] = useState({ name: '', targetQuestions: 20, description: '' });
   const [newDSTopic, setNewDSTopic] = useState({ name: '', targetTutorials: 20 });
+
+  const { isAuthenticated } = useAuth();
 
   if (!isOpen) return null;
 
@@ -148,16 +150,16 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
     setGoals({ ...goals, dsaTopics: updatedTopics });
   };
 
-  const userId = useUserId();
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      {!userId ? (
+      {!isAuthenticated ? (
         <div className="bg-gray-800 rounded-xl p-6">
-          {/* todo for bolt.ai : we should take the name , email and password of the user and use this to create userId instead of creating userId using localstorage . And also make the funtionality that if any user want to use the same in mobile also*/}
+          <div className="text-center text-white">
+            <h2 className="text-xl font-bold mb-4">Authentication Required</h2>
+            <p className="text-gray-400">Please sign in to set your goals.</p>
+          </div>
         </div>
-      )
-        :
+      ) : (
         <div className="bg-gray-800 rounded-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto no-scrollbar shadow-lg">
           <div className="sticky top-0 bg-gray-800 p-6 border-b border-gray-700 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -302,7 +304,6 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
 
             {/* System Design Cases */}
             <div className="space-y-3">
-
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Network className="w-5 h-5 text-yellow-500" />
                 System Design Case Studies
@@ -420,7 +421,6 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
                   ))}
                 </div>
 
-
                 {/* Add new DS topic */}
                 <div className="bg-gray-700 p-3 rounded-lg border-2 border-dashed border-gray-600">
                   <div className="flex gap-2 mb-2">
@@ -457,18 +457,16 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-
                 </div>
               </div>
             </div>
 
-
             {/* CS Fundamentals */}
             <div className="space-y-3">
-
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Cpu className="w-5 h-5 text-red-500" />
-                CS Fundamentals Chapters</h3>
+                CS Fundamentals Chapters
+              </h3>
               <div className="space-y-2">
                 {goals.csFundamentalsChapters.map((chapter, index) => (
                   <div key={index} className="flex items-center gap-2 bg-gray-700 p-2 rounded-lg">
@@ -536,8 +534,7 @@ export const GoalSetupDialog: React.FC<GoalSetupDialogProps> = ({
             </button>
           </div>
         </div>
-      }
-
+      )}
     </div>
   );
-}; 
+};

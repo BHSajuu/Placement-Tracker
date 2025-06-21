@@ -1,11 +1,11 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { useUserId } from "./useUserId";
+import { useAuth } from "./useAuth";
 import { UserGoals, UserProgress, Task, Milestone, Achievement } from "../types";
 import { Id } from "../../convex/_generated/dataModel";
 
 export function useConvexData() {
-  const userId = useUserId();
+  const { userId, isAuthenticated } = useAuth();
 
   // Queries
   const user = useQuery(api.users.getUser, userId ? { userId } : "skip");
@@ -16,7 +16,6 @@ export function useConvexData() {
   const achievements = useQuery(api.achievements.getUserAchievements, userId ? { userId } : "skip");
 
   // Mutations
-  const createUser = useMutation(api.users.createUser);
   const updateStartDate = useMutation(api.users.updateStartDate);
   const createOrUpdateGoals = useMutation(api.userGoals.createOrUpdateGoals);
   const createOrUpdateProgress = useMutation(api.userProgress.createOrUpdateProgress);
@@ -82,6 +81,7 @@ export function useConvexData() {
 
   return {
     userId,
+    isAuthenticated,
     user,
     userGoals: userGoals as UserGoals | undefined,
     userProgress: userProgress ? convertUserProgress(userProgress) : undefined,
@@ -90,18 +90,23 @@ export function useConvexData() {
     achievements: achievements?.map(convertAchievement) || [],
     
     // Mutations
-    createUser,
-    updateStartDate,
-    createOrUpdateGoals,
-    createOrUpdateProgress,
-    createTask,
+    updateStartDate: (startDate: string) => 
+      userId ? updateStartDate({ userId, startDate }) : Promise.resolve(),
+    createOrUpdateGoals: (goals: Omit<UserGoals, 'userId'>) =>
+      userId ? createOrUpdateGoals({ userId, ...goals }) : Promise.resolve(),
+    createOrUpdateProgress: (progress: Omit<UserProgress, 'achievements'>) =>
+      userId ? createOrUpdateProgress({ userId, ...progress }) : Promise.resolve(),
+    createTask: (task: Omit<Task, 'id' | 'createdAt' | 'completed'>) =>
+      userId ? createTask({ userId, ...task }) : Promise.resolve(),
     toggleTask: (taskId: string, completed: boolean) => 
       toggleTask({ taskId: taskId as Id<"tasks">, completed }),
     deleteTask: (taskId: string) => 
       deleteTask({ taskId: taskId as Id<"tasks"> }),
-    createDefaultMilestones,
+    createDefaultMilestones: () =>
+      userId ? createDefaultMilestones({ userId }) : Promise.resolve(),
     updateMilestone: (milestoneId: string, current: number, completed: boolean) =>
       updateMilestone({ milestoneId: milestoneId as Id<"milestones">, current, completed }),
-    createAchievement,
+    createAchievement: (achievement: Omit<Achievement, 'id' | 'unlockedAt'>) =>
+      userId ? createAchievement({ userId, ...achievement }) : Promise.resolve(),
   };
 }

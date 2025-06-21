@@ -2,7 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 export const createDefaultMilestones = mutation({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("milestones")
@@ -90,7 +90,7 @@ export const createDefaultMilestones = mutation({
 });
 
 export const getUserMilestones = query({
-  args: { userId: v.string() },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("milestones")
