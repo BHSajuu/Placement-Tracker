@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code, Globe, Database, Cpu, Network, MessageSquare, Trophy, Star, Mic, CheckCircle } from 'lucide-react';
+import { Code, Globe, Database, Cpu, Network, MessageSquare, Trophy, Mic, CheckCircle } from 'lucide-react';
 import { UserProgress, TaskCategory, Milestone, UserGoals, Task } from '../types';
 
 interface ProgressTrackerProps {
@@ -34,10 +34,6 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
     'English Speaking Practice': 'from-indigo-500 to-indigo-600'
   };
 
-  const getXPForNextLevel = (level: number) => level * 1000;
-  const currentLevelXP = (userProgress.level - 1) * 1000;
-  const nextLevelXP = getXPForNextLevel(userProgress.level);
-  const progressToNextLevel = ((userProgress.totalXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
 
   // Calculate smart progress based on goals
   const calculateSmartProgress = () => {

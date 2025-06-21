@@ -5,7 +5,7 @@ import { getRandomQuote } from '../utils/motivationalQuotes';
 import { GoalSetupDialog } from './GoalSetupDialog';
 import { AuthDialog } from './AuthDialog';
 import { useAuth } from '../hooks/useAuth';
-import toast from 'react-hot-toast';
+
 
 interface DashboardProps {
   userProgress: UserProgress;
