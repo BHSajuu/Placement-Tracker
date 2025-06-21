@@ -44,3 +44,19 @@ This is a smart and personalized preparation tracker for MAANG aspirants, built 
 ## 🚀Getting Started
    
    visit:- https://advanced-placement-preparation-trac.vercel.app/
+
+
+
+# Future updates
+need modifications  :
+1. Update Goal feature is not working ,means after updating an existing or adding a new goal for a spcefic categories,its not reflected back to progressTracker.tsx .
+
+2. In ProgressTracker.tsx , the data for DSA summary, DSA topic wise progress and data science topic wise are stores temporarily because once the task a completed ,its reflect back to Progresstacker.tsx but after refreshing the page all the data are reset to default values .
+
+3. In Dashboard.tsx the current streak like data are not updating .
+
+4. New Journey button not working properly.
+
+5. Remove level and xp related all UI and data 
+
+6. Add toast notification for new journey, task add, task remove and update Goal .

@@ -9,6 +9,7 @@ import { useAuth } from './hooks/useAuth';
 import { Task, UserProgress, Achievement, UserGoals } from './types';
 import { BarChart3, CheckSquare, Target, Activity } from 'lucide-react';
 
+
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
