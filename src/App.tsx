@@ -12,6 +12,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
   
+  
   const {
     userId,
     user,
