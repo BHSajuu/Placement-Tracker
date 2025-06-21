@@ -173,38 +173,6 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Level and XP Progress */}
-      <div className="bg-gradient-to-r from-slate-800 to-[#7886C7] rounded-xl p-6 text-white shadow-lg hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2 rounded-lg">
-              <Star className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">Level {userProgress.level}</h3>
-              <p className="text-purple-100">XP: {userProgress.totalXP.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-purple-100">Next Level</p>
-            <p className="font-semibold">{nextLevelXP.toLocaleString()} XP</p>
-          </div>
-        </div>
-
-        <div className="bg-white/20 rounded-full h-3 mb-2">
-          <div
-            className="bg-white rounded-full h-full transition-all duration-500 ease-out"
-            style={{ width: `${Math.min(progressToNextLevel, 100)}%` }}
-          />
-        </div>
-
-        <div className="flex justify-between text-sm text-purple-100">
-          <span>{Math.round(progressToNextLevel)}% to next level</span>
-          <span>{nextLevelXP - userProgress.totalXP} XP remaining</span>
-        </div>
-      </div>
-
-
       {/* DSA Questions Summary */}
       <div className="bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-blue-500 hover:shadow-lg hover:shadow-blue-300/30 transition-shadow hover:cursor-pointer">
         <div className="flex items-center gap-3 mb-4">
