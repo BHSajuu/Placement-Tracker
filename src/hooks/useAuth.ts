@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
+import toast from 'react-hot-toast';
 
 interface User {
   name: string;
@@ -51,9 +52,10 @@ export function useAuth() {
         user: result.user,
         isAuthenticated: true,
       });
-      
+      toast.success('Registered successfully');
       return { success: true };
     } catch (error) {
+      toast.error('Registration failed: ');
       return { success: false, error: (error as Error).message };
     }
   };
@@ -71,10 +73,12 @@ export function useAuth() {
         user: result.user,
         isAuthenticated: true,
       });
-      
+      toast.success('Logged in successfully');
       return { success: true };
     } catch (error) {
-      return { success: false, error: (error as Error).message };
+      toast.error('Login failed: Invalid email or password'  );
+      return { success: false, error: "" };
+
     }
   };
 
@@ -87,6 +91,7 @@ export function useAuth() {
       user: null,
       isAuthenticated: false,
     });
+    toast.success('Logged out successfully');
   };
 
   return {

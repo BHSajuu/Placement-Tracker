@@ -5,6 +5,7 @@ import { getRandomQuote } from '../utils/motivationalQuotes';
 import { GoalSetupDialog } from './GoalSetupDialog';
 import { AuthDialog } from './AuthDialog';
 import { useAuth } from '../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 interface DashboardProps {
   userProgress: UserProgress;
@@ -23,6 +24,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const { isAuthenticated, user, register, login, logout } = useAuth();
   const today = new Date();
 
@@ -41,11 +43,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const todayTasks = userProgress.dailyHistory[todayStr] || 0;
   const todayDSAQuestions = userProgress.dsaQuestionsHistory[todayStr] || 0;
 
-  const handleResetJourney = () => {
-    if (window.confirm('Are you sure you want to start a new journey? This will clear all your progress and cannot be undone.')) {
-      onResetJourney();
-    }
-  };
+
 
   const handleGoalSetup = () => {
     setShowGoalDialog(true);
@@ -119,7 +117,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <h1 className="text-3xl font-bold text-white">
             MAANG placement preparation tracker
           </h1>
-          <p className="text-gray-400 mt-1">
+          <p className={`text-purple-300  mt-3   ${isAuthenticated && user ? 'text-2xl font-semibold ' : ''}`}>
             {isAuthenticated && user ? `Welcome back, ${user.name}!` : 'Welcome to your prep journey!'}
           </p>
           <p className="text-gray-400 text-sm">
@@ -145,8 +143,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     Update Goals
                   </button>
                   <button
-                    onClick={handleResetJourney}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                    onClick={() => setShowResetModal(true)}
+                    className="btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
                   >
                     <RefreshCw className="w-4 h-4" />
                     New Journey
@@ -320,6 +318,38 @@ export const Dashboard: React.FC<DashboardProps> = ({
         onSave={onUpdateGoals}
         existingGoals={userGoals}
       />
+
+      {/* Custom Modal for New Journey Confirmation */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950  bg-opacity-60 transition-opacity">
+          <div className="bg-slate-950 rounded-2xl shadow-2xl hover:shadow-xl hover:shadow-blue-300/30 transition-shadow duration-300 p-8 relative w-full max-w-md border-t-4 border-lime-600 hover:border-blue-300/30 animate-fade-in">
+            <h3 className="font-extrabold text-2xl text-gray-100 mb-3 flex items-center gap-2">
+              <RefreshCw className="w-6 h-6 text-gray-500" /> Start New Journey ?
+            </h3>
+            <p className="text-gray-400 mb-8 text-lg">
+              Are you sure you want to start a new journey ? <span className="font-bold text-red-500 animate-pulse">This will clear all your progress and cannot be undone.</span>
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-5 py-2 rounded-xl bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition"
+                onClick={() => setShowResetModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-400 text-white font-bold hover:from-red-600 hover:to-pink-600 transition"
+                onClick={() => {
+                  setShowResetModal(false);
+                  onResetJourney();
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

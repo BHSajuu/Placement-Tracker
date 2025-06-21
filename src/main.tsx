@@ -11,12 +11,18 @@ createRoot(document.getElementById('root')!).render(
     <ConvexProvider client={convex}>
       <App />
       <Toaster 
-        position="top-right"
+        position="top-center"
         toastOptions={{
           duration: 3000,
           style: {
             background: '#374151',
             color: '#fff',
+            fontSize: '20px',
+            padding: '10px 12px',
+            borderRadius: '24px',
+            borderLeftWidth: '8px',
+            borderLeftColor: '#3b82f6',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           },
         }}
       />

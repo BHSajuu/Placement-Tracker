@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Clock, CheckCircle2, Circle, Trash2, Star, Hash, Globe, Database, Cpu, Network, MessageSquare, Mic } from 'lucide-react';
 import { Task, TaskCategory, TimeSlot, UserGoals } from '../types';
+import toast from 'react-hot-toast';
 
 interface TaskManagerProps {
   tasks: Task[];
@@ -105,6 +106,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
       chapterName: ''
     });
     setShowAddForm(false);
+    toast.success(`${newTask.category} Task added successfully!`);
   };
 
   const tasksByTimeSlot = timeSlots.reduce((acc, slot) => {

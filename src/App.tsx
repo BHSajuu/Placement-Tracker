@@ -8,6 +8,7 @@ import { useConvexData } from './hooks/useConvexData';
 import { useAuth } from './hooks/useAuth';
 import { Task, UserProgress, Achievement, UserGoals } from './types';
 import { BarChart3, CheckSquare, Target, Activity } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 
 function App() {
@@ -410,12 +411,14 @@ function App() {
 
   const handleDeleteTask = async (taskId: string) => {
     await deleteTask(taskId);
+    toast.success(`Task deleted successfully!`);
   };
 
   const updateGoals = async (goals: UserGoals) => {
     if (!isAuthenticated || !userId) return;
     
     await createOrUpdateGoals(goals);
+    toast.success('Goals updated successfully!');
   };
 
   const resetJourney = async () => {
@@ -449,6 +452,8 @@ function App() {
 
     setCurrentAchievement(null);
     setActiveTab('dashboard');
+
+    toast.success('Journey reset successfully! Your progress has been cleared from database.');
   };
 
   const tabs = [
