@@ -32,7 +32,6 @@ export function useConvexData() {
     title: convexTask.title,
     category: convexTask.category,
     timeSlot: convexTask.timeSlot,
-    xp: convexTask.xp,
     completed: convexTask.completed,
     createdAt: new Date(convexTask.createdAt),
     completedAt: convexTask.completedAt ? new Date(convexTask.completedAt) : undefined,
@@ -53,7 +52,6 @@ export function useConvexData() {
     category: convexMilestone.category,
     target: convexMilestone.target,
     current: convexMilestone.current,
-    xp: convexMilestone.xp,
     completed: convexMilestone.completed,
   });
 
@@ -67,8 +65,6 @@ export function useConvexData() {
   });
 
   const convertUserProgress = (convexProgress: any): UserProgress => ({
-    totalXP: convexProgress.totalXP,
-    level: convexProgress.level,
     currentStreak: convexProgress.currentStreak,
     longestStreak: convexProgress.longestStreak,
     completedTasks: convexProgress.completedTasks,

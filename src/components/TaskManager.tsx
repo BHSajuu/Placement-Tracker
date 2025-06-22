@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Clock, CheckCircle2, Circle, Trash2, Star, Hash, Globe, Database, Cpu, Network, MessageSquare, Mic } from 'lucide-react';
+import { Plus, Clock, CheckCircle2, Circle, Trash2, Hash, Globe, Database, Cpu, Network, MessageSquare, Mic } from 'lucide-react';
 import { Task, TaskCategory, TimeSlot, UserGoals } from '../types';
 import toast from 'react-hot-toast';
 
@@ -23,7 +23,6 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
     title: '',
     category: 'DSA' as TaskCategory,
     timeSlot: 'Morning' as TimeSlot,
-    xp: 50,
     questionsCount: 1,
     dsaTopicName: '',
     dataScienceTopicName: '',
@@ -58,7 +57,6 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
       title: newTask.title,
       category: newTask.category,
       timeSlot: newTask.timeSlot,
-      xp: newTask.xp,
       completed: false
     };
 
@@ -95,7 +93,6 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
       title: '',
       category: 'DSA',
       timeSlot: 'Morning',
-      xp: 50,
       questionsCount: 1,
       dsaTopicName: '',
       dataScienceTopicName: '',
@@ -106,7 +103,6 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
       chapterName: ''
     });
     setShowAddForm(false);
-    toast.success(`${newTask.category} Task added successfully!`);
   };
 
   const tasksByTimeSlot = timeSlots.reduce((acc, slot) => {
@@ -342,7 +338,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Category
@@ -370,22 +366,6 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
                   {timeSlots.map(slot => (
                     <option key={slot} value={slot}>{slot}</option>
                   ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  XP Value
-                </label>
-                <select
-                  value={newTask.xp}
-                  onChange={(e) => setNewTask({ ...newTask, xp: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white"
-                >
-                  <option value={25}>Easy (25 XP)</option>
-                  <option value={50}>Medium (50 XP)</option>
-                  <option value={100}>Hard (100 XP)</option>
-                  <option value={200}>Epic (200 XP)</option>
                 </select>
               </div>
             </div>
@@ -471,11 +451,6 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
                           {getTaskDetails(task)}
                         </div>
                       )}
-
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <Star className="w-3 h-3" />
-                        <span>{task.xp} XP</span>
-                      </div>
                     </div>
 
                     <button

@@ -14,7 +14,6 @@ export interface Task {
   title: string;
   category: TaskCategory;
   timeSlot: TimeSlot;
-  xp: number;
   completed: boolean;
   createdAt: Date;
   completedAt?: Date;
@@ -29,8 +28,6 @@ export interface Task {
 }
 
 export interface UserProgress {
-  totalXP: number;
-  level: number;
   currentStreak: number;
   longestStreak: number;
   completedTasks: number;
@@ -45,7 +42,7 @@ export interface Achievement {
   id: string;
   title: string;
   description: string;
-  type: 'daily' | 'milestone' | 'streak' | 'topic' | 'xp';
+  type: 'daily' | 'milestone' | 'streak' | 'topic';
   icon: string;
   unlockedAt: Date;
 }
@@ -57,7 +54,6 @@ export interface Milestone {
   category: TaskCategory;
   target: number;
   current: number;
-  xp: number;
   completed: boolean;
 }
 

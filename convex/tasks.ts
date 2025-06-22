@@ -19,7 +19,6 @@ export const createTask = mutation({
       v.literal("Afternoon"),
       v.literal("Evening")
     ),
-    xp: v.number(),
     questionsCount: v.optional(v.number()),
     dsaTopicName: v.optional(v.string()),
     dataScienceTopicName: v.optional(v.string()),
@@ -35,7 +34,6 @@ export const createTask = mutation({
       title: args.title,
       category: args.category,
       timeSlot: args.timeSlot,
-      xp: args.xp,
       completed: false,
       createdAt: Date.now(),
       questionsCount: args.questionsCount,

@@ -32,8 +32,6 @@ export default defineSchema({
 
   userProgress: defineTable({
     userId: v.id("users"),
-    totalXP: v.number(),
-    level: v.number(),
     currentStreak: v.number(),
     longestStreak: v.number(),
     completedTasks: v.number(),
@@ -61,7 +59,6 @@ export default defineSchema({
       v.literal("Afternoon"),
       v.literal("Evening")
     ),
-    xp: v.number(),
     completed: v.boolean(),
     createdAt: v.number(),
     completedAt: v.optional(v.number()),
@@ -90,7 +87,6 @@ export default defineSchema({
     ),
     target: v.number(),
     current: v.number(),
-    xp: v.number(),
     completed: v.boolean(),
     updatedAt: v.number(),
   }).index("by_userId", ["userId"]),
@@ -103,8 +99,7 @@ export default defineSchema({
       v.literal("daily"),
       v.literal("milestone"),
       v.literal("streak"),
-      v.literal("topic"),
-      v.literal("xp")
+      v.literal("topic")
     ),
     icon: v.string(),
     unlockedAt: v.number(),

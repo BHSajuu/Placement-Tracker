@@ -43,8 +43,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const todayTasks = userProgress.dailyHistory[todayStr] || 0;
   const todayDSAQuestions = userProgress.dsaQuestionsHistory[todayStr] || 0;
 
-
-
   const handleGoalSetup = () => {
     setShowGoalDialog(true);
   };
@@ -65,11 +63,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
       suffix: 'days'
     },
     {
-      title: 'Total XP',
-      value: userProgress.totalXP.toLocaleString(),
+      title: 'Total Tasks',
+      value: userProgress.completedTasks,
       icon: <Trophy className="w-5 h-5" />,
       color: 'from-yellow-500 to-orange-500',
-      suffix: 'XP'
+      suffix: 'completed'
     },
     {
       title: 'Tasks Today',

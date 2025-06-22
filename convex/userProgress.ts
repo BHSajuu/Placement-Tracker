@@ -4,8 +4,6 @@ import { v } from "convex/values";
 export const createOrUpdateProgress = mutation({
   args: {
     userId: v.id("users"),
-    totalXP: v.number(),
-    level: v.number(),
     currentStreak: v.number(),
     longestStreak: v.number(),
     completedTasks: v.number(),
@@ -22,8 +20,6 @@ export const createOrUpdateProgress = mutation({
 
     const progressData = {
       userId: args.userId,
-      totalXP: args.totalXP,
-      level: args.level,
       currentStreak: args.currentStreak,
       longestStreak: args.longestStreak,
       completedTasks: args.completedTasks,

@@ -10,8 +10,7 @@ export const createAchievement = mutation({
       v.literal("daily"),
       v.literal("milestone"),
       v.literal("streak"),
-      v.literal("topic"),
-      v.literal("xp")
+      v.literal("topic")
     ),
     icon: v.string(),
   },

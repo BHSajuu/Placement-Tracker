@@ -20,7 +20,6 @@ export const createDefaultMilestones = mutation({
         category: 'DSA' as const,
         target: 400,
         current: 0,
-        xp: 500,
         completed: false
       },
       {
@@ -29,7 +28,6 @@ export const createDefaultMilestones = mutation({
         category: 'Web Dev' as const,
         target: 1,
         current: 0,
-        xp: 1000,
         completed: false
       },
       {
@@ -38,7 +36,6 @@ export const createDefaultMilestones = mutation({
         category: 'System Design' as const,
         target: 1,
         current: 0,
-        xp: 800,
         completed: false
       },
       {
@@ -47,7 +44,6 @@ export const createDefaultMilestones = mutation({
         category: 'Mock Interview' as const,
         target: 5,
         current: 0,
-        xp: 600,
         completed: false
       },
       {
@@ -56,7 +52,6 @@ export const createDefaultMilestones = mutation({
         category: 'Data Science' as const,
         target: 50,
         current: 0,
-        xp: 700,
         completed: false
       },
       {
@@ -65,7 +60,6 @@ export const createDefaultMilestones = mutation({
         category: 'CS Fundamentals' as const,
         target: 5,
         current: 0,
-        xp: 700,
         completed: false
       },
       {
@@ -74,7 +68,6 @@ export const createDefaultMilestones = mutation({
         category: 'English Speaking Practice' as const,
         target: 10,
         current: 0,
-        xp: 400,
         completed: false
       }
     ];

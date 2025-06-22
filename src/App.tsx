@@ -10,7 +10,6 @@ import { Task, UserProgress, Achievement, UserGoals } from './types';
 import { BarChart3, CheckSquare, Target, Activity } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
@@ -46,8 +45,6 @@ function App() {
   useEffect(() => {
     if (isAuthenticated && userId && userGoals && !userProgress) {
       createOrUpdateProgress({
-        totalXP: 0,
-        level: 1,
         currentStreak: 0,
         longestStreak: 0,
         completedTasks: 0,
@@ -66,7 +63,6 @@ function App() {
       title: taskData.title,
       category: taskData.category,
       timeSlot: taskData.timeSlot,
-      xp: taskData.xp,
       questionsCount: taskData.questionsCount,
       dsaTopicName: taskData.dsaTopicName,
       dataScienceTopicName: taskData.dataScienceTopicName,
@@ -76,9 +72,10 @@ function App() {
       sessionCount: taskData.sessionCount,
       chapterName: taskData.chapterName,
     });
+    toast.success('Task added successfully!');
   };
 
-  const calculateSmartProgress = (task: Task, isCompleting: boolean) => {
+  const calculateSmartProgress = (task: Task) => {
     if (!userGoals) return 0;
 
     switch (task.category) {
@@ -132,7 +129,6 @@ function App() {
         
         await createAchievement(achievement);
         
-        newProgress.totalXP += 150;
         setCurrentAchievement({
           id: `temp_${Date.now()}`,
           ...achievement,
@@ -143,7 +139,6 @@ function App() {
       topicProgress.questionsCompleted = Math.max(0, topicProgress.questionsCompleted - questionsCount);
       if (topicProgress.completed && topicProgress.questionsCompleted < topicProgress.totalQuestions) {
         topicProgress.completed = false;
-        newProgress.totalXP = Math.max(0, newProgress.totalXP - 150);
       }
     }
   };
@@ -179,7 +174,6 @@ function App() {
         
         await createAchievement(achievement);
         
-        newProgress.totalXP += 150;
         setCurrentAchievement({
           id: `temp_${Date.now()}`,
           ...achievement,
@@ -190,7 +184,6 @@ function App() {
       topicProgress.tutorialsCompleted = Math.max(0, topicProgress.tutorialsCompleted - tutorials);
       if (topicProgress.completed && topicProgress.tutorialsCompleted < topicProgress.totalTutorials) {
         topicProgress.completed = false;
-        newProgress.totalXP = Math.max(0, newProgress.totalXP - 150);
       }
     }
   };
@@ -221,7 +214,6 @@ function App() {
       };
       
       await createAchievement(achievement);
-      newProgress.totalXP += 100;
       setCurrentAchievement({
         id: `temp_${Date.now()}`,
         ...achievement,
@@ -238,7 +230,6 @@ function App() {
       };
       
       await createAchievement(achievement);
-      newProgress.totalXP += 100;
       setCurrentAchievement({
         id: `temp_${Date.now()}`,
         ...achievement,
@@ -255,12 +246,44 @@ function App() {
       };
       
       await createAchievement(achievement);
-      newProgress.totalXP += 200;
       setCurrentAchievement({
         id: `temp_${Date.now()}`,
         ...achievement,
         unlockedAt: new Date()
       });
+    }
+  };
+
+  const updateStreakData = (newProgress: UserProgress, today: string) => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const prevTodayCount = (newProgress.dailyHistory[today] || 1) - 1;
+    
+    if (prevTodayCount === 0) {
+      const yesterdayCount = newProgress.dailyHistory[yesterdayStr] || 0;
+      if (yesterdayCount > 0) {
+        newProgress.currentStreak += 1;
+      } else {
+        newProgress.currentStreak = 1;
+      }
+      newProgress.longestStreak = Math.max(newProgress.longestStreak, newProgress.currentStreak);
+      
+      if (newProgress.currentStreak === 7) {
+        const achievement = {
+          title: 'Week Warrior',
+          description: 'Maintained a 7-day streak!',
+          type: 'streak' as const,
+          icon: 'flame',
+        };
+        
+        createAchievement(achievement);
+        setCurrentAchievement({
+          id: `temp_${Date.now()}`,
+          ...achievement,
+          unlockedAt: new Date()
+        });
+      }
     }
   };
 
@@ -278,9 +301,7 @@ function App() {
 
     if (!task.completed) {
       // Task completed
-      newProgress.totalXP += task.xp;
       newProgress.completedTasks += 1;
-      newProgress.level = Math.floor(newProgress.totalXP / 1000) + 1;
 
       // Update daily history
       newProgress.dailyHistory[today] = (newProgress.dailyHistory[today] || 0) + 1;
@@ -295,7 +316,7 @@ function App() {
       await updateDSTopicProgress(task, true, newProgress);
 
       // Update milestones
-      const smartProgressIncrement = calculateSmartProgress(task, true);
+      const smartProgressIncrement = calculateSmartProgress(task);
       const relatedMilestones = milestones.filter(m => m.category === task.category);
       
       for (const milestone of relatedMilestones) {
@@ -306,8 +327,6 @@ function App() {
           await updateMilestone(milestone.id, newCurrent, isCompleted);
           
           if (isCompleted) {
-            newProgress.totalXP += milestone.xp;
-            
             const achievement = {
               title: `${milestone.title} Complete!`,
               description: milestone.description,
@@ -326,45 +345,14 @@ function App() {
       }
 
       // Update streak
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
-      const prevTodayCount = (newProgress.dailyHistory[today] || 1) - 1;
-      
-      if (prevTodayCount === 0) {
-        const yesterdayCount = newProgress.dailyHistory[yesterdayStr] || 0;
-        if (yesterdayCount > 0) {
-          newProgress.currentStreak += 1;
-        } else {
-          newProgress.currentStreak = 1;
-        }
-        newProgress.longestStreak = Math.max(newProgress.longestStreak, newProgress.currentStreak);
-        
-        if (newProgress.currentStreak === 7) {
-          const achievement = {
-            title: 'Week Warrior',
-            description: 'Maintained a 7-day streak!',
-            type: 'streak' as const,
-            icon: 'flame',
-          };
-          
-          await createAchievement(achievement);
-          setCurrentAchievement({
-            id: `temp_${Date.now()}`,
-            ...achievement,
-            unlockedAt: new Date()
-          });
-        }
-      }
+      updateStreakData(newProgress, today);
 
       // Check daily milestones
       await checkDailyMilestones([...tasks, { ...task, completed: true }], newProgress);
 
     } else {
       // Task uncompleted
-      newProgress.totalXP = Math.max(0, newProgress.totalXP - task.xp);
       newProgress.completedTasks = Math.max(0, newProgress.completedTasks - 1);
-      newProgress.level = Math.floor(newProgress.totalXP / 1000) + 1;
 
       // Update daily history
       newProgress.dailyHistory[today] = Math.max(0, (newProgress.dailyHistory[today] || 0) - 1);
@@ -379,7 +367,7 @@ function App() {
       await updateDSTopicProgress(task, false, newProgress);
 
       // Reverse milestone progress
-      const smartProgressDecrement = calculateSmartProgress(task, false);
+      const smartProgressDecrement = calculateSmartProgress(task);
       const relatedMilestones = milestones.filter(m => m.category === task.category);
       
       for (const milestone of relatedMilestones) {
@@ -388,17 +376,11 @@ function App() {
         const isCompleted = wasCompleted && newCurrent >= milestone.target;
         
         await updateMilestone(milestone.id, newCurrent, isCompleted);
-        
-        if (wasCompleted && !isCompleted) {
-          newProgress.totalXP = Math.max(0, newProgress.totalXP - milestone.xp);
-        }
       }
     }
 
     // Save updated progress
     await createOrUpdateProgress({
-      totalXP: newProgress.totalXP,
-      level: newProgress.level,
       currentStreak: newProgress.currentStreak,
       longestStreak: newProgress.longestStreak,
       completedTasks: newProgress.completedTasks,
@@ -411,7 +393,7 @@ function App() {
 
   const handleDeleteTask = async (taskId: string) => {
     await deleteTask(taskId);
-    toast.success(`Task deleted successfully!`);
+    toast.success('Task deleted successfully!');
   };
 
   const updateGoals = async (goals: UserGoals) => {
@@ -429,8 +411,6 @@ function App() {
 
     // Reset progress
     await createOrUpdateProgress({
-      totalXP: 0,
-      level: 1,
       currentStreak: 0,
       longestStreak: 0,
       completedTasks: 0,
@@ -453,7 +433,7 @@ function App() {
     setCurrentAchievement(null);
     setActiveTab('dashboard');
 
-    toast.success('Journey reset successfully! Your progress has been cleared from database.');
+    toast.success('New journey started! Your progress has been reset.');
   };
 
   const tabs = [
@@ -464,8 +444,6 @@ function App() {
   ];
 
   const defaultUserProgress: UserProgress = {
-    totalXP: 0,
-    level: 1,
     currentStreak: 0,
     longestStreak: 0,
     completedTasks: 0,
