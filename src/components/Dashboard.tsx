@@ -63,13 +63,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
       suffix: 'days'
     },
     {
-      title: 'Total Tasks',
-      value: userProgress.completedTasks,
-      icon: <Trophy className="w-5 h-5" />,
-      color: 'from-yellow-500 to-orange-500',
-      suffix: 'completed'
-    },
-    {
       title: 'Tasks Today',
       value: todayTasks,
       icon: <Target className="w-5 h-5" />,
@@ -129,7 +122,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="flex gap-3">
-          {isAuthenticated ? (
+          {isAuthenticated &&
             <>
               {userGoals && (
                 <>
@@ -157,16 +150,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Logout
               </button>
             </>
-          ) : (
-            <button
-              onClick={() => setShowAuthDialog(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-            >
-              Get Started
-            </button>
-          )}
+          }
         </div>
-      </div>
+      </div> 
 
       {/* Authentication Required Prompt */}
       {!isAuthenticated && (
@@ -190,7 +176,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Goal Setup Prompt */}
       {isAuthenticated && !userGoals && (
-        <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-6 text-white shadow-lg border-2 border-green-400">
+        <div className="bg-gradient-to-r from-green-900 to-slate-600 rounded-xl p-6 text-white shadow-lg border-2 border-green-400">
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 items-center justify-between">
             <div>
               <h2 className="text-xl font-bold mb-2">Set Your 60-Day Goals!</h2>

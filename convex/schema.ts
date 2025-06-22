@@ -34,6 +34,7 @@ export default defineSchema({
     userId: v.id("users"),
     currentStreak: v.number(),
     longestStreak: v.number(),
+    // todayTasks: v.number(),
     completedTasks: v.number(),
     dailyHistory: v.object({}),
     dsaQuestionsHistory: v.object({}),
