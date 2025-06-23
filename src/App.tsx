@@ -379,9 +379,16 @@ function App() {
       }
     }
 
-    // Save updated progress - Fixed: Remove achievements from the object
-    const { achievements: _, ...progressWithoutAchievements } = newProgress;
-    await createOrUpdateProgress(progressWithoutAchievements);
+    // Save updated progress - Fixed: Properly exclude achievements
+    await createOrUpdateProgress({
+      currentStreak: newProgress.currentStreak,
+      longestStreak: newProgress.longestStreak,
+      completedTasks: newProgress.completedTasks,
+      dailyHistory: newProgress.dailyHistory,
+      dsaQuestionsHistory: newProgress.dsaQuestionsHistory,
+      dsaTopicsProgress: newProgress.dsaTopicsProgress,
+      dsTopicProgress: newProgress.dsTopicProgress,
+    });
   };
 
   const handleDeleteTask = async (taskId: string) => {
