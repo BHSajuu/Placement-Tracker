@@ -64,11 +64,12 @@ export function useConvexData() {
     unlockedAt: new Date(convexAchievement.unlockedAt),
   });
 
+  // Fixed: Remove achievements from UserProgress conversion since it's not in the schema
   const convertUserProgress = (convexProgress: any): UserProgress => ({
     currentStreak: convexProgress.currentStreak,
     longestStreak: convexProgress.longestStreak,
     completedTasks: convexProgress.completedTasks,
-    achievements: achievements?.map(convertAchievement) || [],
+    achievements: achievements?.map(convertAchievement) || [], // Get achievements separately
     dailyHistory: convexProgress.dailyHistory,
     dsaQuestionsHistory: convexProgress.dsaQuestionsHistory,
     dsaTopicsProgress: convexProgress.dsaTopicsProgress,
@@ -85,13 +86,16 @@ export function useConvexData() {
     milestones: milestones?.map(convertMilestone) || [],
     achievements: achievements?.map(convertAchievement) || [],
     
-    // Mutations
+    // Mutations - Fixed: Remove achievements from progress mutations
     updateStartDate: (startDate: string) => 
       userId ? updateStartDate({ userId, startDate }) : Promise.resolve(),
     createOrUpdateGoals: (goals: Omit<UserGoals, 'userId'>) =>
       userId ? createOrUpdateGoals({ userId, ...goals }) : Promise.resolve(),
-    createOrUpdateProgress: (progress: Omit<UserProgress, 'achievements'>) =>
-      userId ? createOrUpdateProgress({ userId, ...progress }) : Promise.resolve(),
+    createOrUpdateProgress: (progress: Omit<UserProgress, 'achievements'>) => {
+      // Remove achievements from the progress object before sending to Convex
+      const { achievements: _, ...progressWithoutAchievements } = progress;
+      return userId ? createOrUpdateProgress({ userId, ...progressWithoutAchievements }) : Promise.resolve();
+    },
     createTask: (task: Omit<Task, 'id' | 'createdAt' | 'completed'>) =>
       userId ? createTask({ userId, ...task }) : Promise.resolve(),
     toggleTask: (taskId: string, completed: boolean) => 

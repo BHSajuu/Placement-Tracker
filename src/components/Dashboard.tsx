@@ -47,13 +47,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setShowGoalDialog(true);
   };
 
-  const handleAuthSuccess = () => {
-    // After successful auth, show goal setup if no goals exist
-    if (!userGoals) {
-      setShowGoalDialog(true);
-    }
-  };
-
   const stats = [
     {
       title: 'Current Streak',
@@ -174,7 +167,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
       )}
 
-      {/* Goal Setup Prompt */}
+      {/* Goal Setup Prompt - Only show if authenticated but no goals */}
       {isAuthenticated && !userGoals && (
         <div className="bg-gradient-to-r from-green-900 to-slate-600 rounded-xl p-6 text-white shadow-lg border-2 border-green-400">
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 items-center justify-between">
@@ -290,7 +283,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
-        onSuccess={handleAuthSuccess}
+        onSuccess={() => {
+          // Don't automatically show goal dialog after auth
+          // User can click "Set Goals" button when ready
+        }}
         onRegister={register}
         onLogin={login}
       />
