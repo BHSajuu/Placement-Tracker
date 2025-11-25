@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Clock, CheckCircle2, Circle, Trash2, Hash, Globe, Database, Cpu, Network, MessageSquare, Mic } from 'lucide-react';
 import { Task, TaskCategory, TimeSlot, UserGoals } from '../types';
-import toast from 'react-hot-toast';
+
 
 interface TaskManagerProps {
   tasks: Task[];
@@ -34,7 +34,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
   });
 
   const timeSlots: TimeSlot[] = ['Morning', 'Afternoon', 'Evening'];
-  const categories: TaskCategory[] = ['DSA', 'Web Dev', 'Data Science', 'CS Fundamentals', 'System Design', 'Mock Interview', 'English Speaking Practice'];
+  const categories: TaskCategory[] = ['DSA', 'Web Dev', 'Data Science', 'CS Fundamentals', 'System Design', 'Mock Interview', 'English Speaking Practice', 'other'];
 
   const getCategoryIcon = (category: TaskCategory) => {
     const icons = {
@@ -44,7 +44,8 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
       'CS Fundamentals': <Cpu className="w-4 h-4" />,
       'System Design': <Network className="w-4 h-4" />,
       'Mock Interview': <MessageSquare className="w-4 h-4" />,
-      'English Speaking Practice': <Mic className="w-4 h-4" />
+      'English Speaking Practice': <Mic className="w-4 h-4" />,
+      'other': <Plus className="w-4 h-4" />
     };
     return icons[category];
   };
@@ -118,7 +119,8 @@ export const TaskManager: React.FC<TaskManagerProps> = ({
       'CS Fundamentals': 'bg-red-900 text-red-200 border border-red-700',
       'System Design': 'bg-yellow-900 text-yellow-200 border border-yellow-700',
       'Mock Interview': 'bg-pink-900 text-pink-200 border border-pink-700',
-      'English Speaking Practice': 'bg-indigo-900 text-indigo-200 border border-indigo-700'
+     'English Speaking Practice': 'bg-indigo-900 text-indigo-200 border border-indigo-700',
+       'other': 'bg-gray-900 text-gray-200 border border-gray-700'    
     };
     return colors[category];
   };

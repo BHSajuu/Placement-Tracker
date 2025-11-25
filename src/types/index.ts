@@ -5,7 +5,8 @@ export type TaskCategory =
   | 'CS Fundamentals' 
   | 'System Design' 
   | 'Mock Interview' 
-  | 'English Speaking Practice';
+  | 'English Speaking Practice'
+  | 'other';
 
 export type TimeSlot = 'Morning' | 'Afternoon' | 'Evening';
 
@@ -31,31 +32,13 @@ export interface UserProgress {
   currentStreak: number;
   longestStreak: number;
   completedTasks: number;
-  achievements: Achievement[];
   dailyHistory: Record<string, number>;
   dsaQuestionsHistory: Record<string, number>;
   dsaTopicsProgress: Record<string, { questionsCompleted: number; totalQuestions: number; completed: boolean }>;
   dsTopicProgress: Record<string, { tutorialsCompleted: number; totalTutorials: number; completed: boolean }>;
 }
 
-export interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  type: 'daily' | 'milestone' | 'streak' | 'topic';
-  icon: string;
-  unlockedAt: Date;
-}
 
-export interface Milestone {
-  id: string;
-  title: string;
-  description: string;
-  category: TaskCategory;
-  target: number;
-  current: number;
-  completed: boolean;
-}
 
 export interface DSATopic {
   name: string;
